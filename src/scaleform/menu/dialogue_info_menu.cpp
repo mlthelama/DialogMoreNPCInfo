@@ -103,9 +103,7 @@ namespace scaleform {
 
     void dialogue_info_menu::RefreshPlatform() { IMenu::RefreshPlatform(); }
 
-    void dialogue_info_menu::Logger::LogMessageVarg(LogMessageType,
-        const char* a_fmt,
-        const std::va_list a_arg_list) {
+    void dialogue_info_menu::Logger::LogMessageVarg(LogMessageType, const char* a_fmt, const std::va_list a_arg_list) {
         std::string fmt(a_fmt ? a_fmt : "");
         while (!fmt.empty() && fmt.back() == '\n') {
             fmt.pop_back();

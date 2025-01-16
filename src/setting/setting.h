@@ -6,4 +6,3 @@ namespace setting {
         static void load_all_settings();
     };
 }  // setting
-

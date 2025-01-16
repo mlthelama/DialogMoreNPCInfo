@@ -12,7 +12,7 @@ namespace util {
 
         logger::trace("checking mod {} for form {}"sv, a_mod, form_id);
 
-        RE::TESForm *form = RE::TESDataHandler::GetSingleton()->LookupForm(form_id, a_mod);
+        RE::TESForm* form = RE::TESDataHandler::GetSingleton()->LookupForm(form_id, a_mod);
         if (form) {
             logger::trace("got form id {}, name {}", type_util::int_to_hex(form->GetFormID()), form->GetName());
         }

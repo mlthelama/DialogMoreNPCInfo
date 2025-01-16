@@ -2,9 +2,9 @@
 #include "hook/hook.h"
 #include "mod/mod_manager.h"
 #include "scaleform/scaleform.h"
+#include "setting/setting.h"
 #include "setting/setting_ini.h"
 #include "util/translation.h"
-#include "setting/setting.h"
 
 void init_logger() {
     if (static bool initialized = false; !initialized) {
@@ -77,12 +77,12 @@ EXTERN_C [[maybe_unused]] __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(con
             case SKSE::MessagingInterface::kDataLoaded:
                 logger::info("Data loaded"sv);
                 event::event::sink_event_handler();
-            
+
                 init_settings();
                 init_mod_support();
 
                 util::translation::get_singleton()->build_translation_map();
-            
+
                 hook::hook::install();
                 scaleform::scaleform::Register();
 
