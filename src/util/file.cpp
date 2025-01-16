@@ -9,7 +9,7 @@ namespace util {
         logger::trace("using file path {}"sv, file_path);
         if (std::filesystem::is_directory(file_path)) {
             for (const auto& entry : std::filesystem::directory_iterator(file_path)) {
-                if (std::filesystem::is_regular_file(entry) && entry.path().extension() == a_extension &&
+                if (is_regular_file(entry) && entry.path().extension() == a_extension &&
                     entry.path().filename().string().starts_with(a_base_name)) {
                     const auto& config_file_path = entry.path();
                     logger::trace("found file {}"sv, config_file_path.string());

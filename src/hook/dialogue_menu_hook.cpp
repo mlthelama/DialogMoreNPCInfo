@@ -1,7 +1,7 @@
 ﻿#include "dialogue_menu_hook.h"
 #include "handle/dialogueactorhandle.h"
 #include "scaleform/menu/dialogue_info_menu.h"
-#include "setting/setting.h"
+#include "setting/setting_ini.h"
 
 namespace hook {
     void dialogue_menu_hook::install() {
@@ -31,7 +31,7 @@ namespace hook {
                 logger::trace("Player is {}, Target is {}"sv, player->GetName(), dialog_target->GetName());
 
                 //only show if we are allowed to
-                if (setting::get_show_window()) {
+                if (setting_ini::get_show_window()) {
                     if (!scaleform::dialogue_info_menu::is_menu_open()) {
                         scaleform::dialogue_info_menu::open();
                     }

@@ -2,6 +2,8 @@
 #include "hook/hook.h"
 #include "mod/mod_manager.h"
 #include "scaleform/scaleform.h"
+#include "setting/setting_ini.h"
+#include "util/translation.h"
 #include "setting/setting.h"
 
 void init_logger() {
@@ -30,7 +32,7 @@ void init_logger() {
         logger::info("{} v{}"sv, Version::PROJECT, Version::NAME);
 
         try {
-            setting::load_settings();
+            setting_ini::load_settings();
         } catch (const std::exception& e) {
             logger::warn("failed to load ini_setting {}"sv, e.what());
         }
@@ -46,6 +48,15 @@ void init_logger() {
     }
 }
 
+void init_settings() {
+    try {
+        setting::setting::load_all_settings();
+    } catch (const std::exception& e) {
+        logger::warn("failed to load json setting {}"sv, e.what());
+    }
+}
+
+//todo move to separate file
 void init_mod_support() {
     auto* mod_manager = mod::mod_manager::get_singleton();
 
@@ -65,11 +76,14 @@ EXTERN_C [[maybe_unused]] __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(con
         switch (a_msg->type) {
             case SKSE::MessagingInterface::kDataLoaded:
                 logger::info("Data loaded"sv);
-
+                event::event::sink_event_handler();
+            
+                init_settings();
                 init_mod_support();
 
+                util::translation::get_singleton()->build_translation_map();
+            
                 hook::hook::install();
-                event::event::sink_event_handler();
                 scaleform::scaleform::Register();
 
                 logger::info("Done with adding"sv);

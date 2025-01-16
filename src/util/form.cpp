@@ -7,15 +7,14 @@ namespace util {
             return nullptr;
         }
 
-        RE::TESForm* form;
         RE::FormID form_id;
         std::istringstream(a_form) >> std::hex >> form_id;
 
         logger::trace("checking mod {} for form {}"sv, a_mod, form_id);
 
-        form = RE::TESDataHandler::GetSingleton()->LookupForm(form_id, a_mod);
+        RE::TESForm *form = RE::TESDataHandler::GetSingleton()->LookupForm(form_id, a_mod);
         if (form) {
-            logger::trace("got form id {}, name {}", util::type_util::int_to_hex(form->GetFormID()), form->GetName());
+            logger::trace("got form id {}, name {}", type_util::int_to_hex(form->GetFormID()), form->GetName());
         }
 
         return form;

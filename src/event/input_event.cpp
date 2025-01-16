@@ -1,6 +1,6 @@
 ﻿#include "input_event.h"
 #include "scaleform/menu/dialogue_info_menu.h"
-#include "setting/setting.h"
+#include "setting/setting_ini.h"
 
 namespace event {
 
@@ -16,7 +16,7 @@ namespace event {
         using event_type = RE::INPUT_EVENT_TYPE;
         using device_type = RE::INPUT_DEVICE;
 
-        key_ = static_cast<uint32_t>(setting::get_toggle_key());
+        key_ = static_cast<uint32_t>(setting_ini::get_toggle_key());
 
         if (key_ == k_invalid) {
             return event_result::kContinue;
@@ -79,10 +79,10 @@ namespace event {
                 if (ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)) {
                     if (scaleform::dialogue_info_menu::is_menu_open()) {
                         scaleform::dialogue_info_menu::close();
-                        setting::set_show_window(false);
+                        setting_ini::set_show_window(false);
                     } else {
                         scaleform::dialogue_info_menu::open();
-                        setting::set_show_window(true);
+                        setting_ini::set_show_window(true);
                     }
                 }
                 break;

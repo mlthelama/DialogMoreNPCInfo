@@ -34,7 +34,7 @@ public:
 
     static std::string_view get_faction(RE::Actor*& a_actor) {
         auto faction = "-";
-        if (setting::get_hide_faction()) {
+        if (setting_ini::get_hide_faction()) {
             return faction;
         }
         a_actor->VisitFactions([&](const RE::TESFaction* a_faction, int8_t a_rank) {
@@ -73,7 +73,7 @@ public:
             max >= util::min_train_level && max <= util::max_train_level) {
             // handle hand to hand support
             auto value = get_value_from_map(teaching_skill_string_map_, teaches_skill.get());
-            if (setting::get_hand_to_hand()) {
+            if (setting_ini::get_hand_to_hand()) {
                 switch (teaches_skill.get()) {
                     case RE::CLASS_DATA::Skill::kLockpicking:
                         value = menu_keys::hand_to_hand;

@@ -25,7 +25,11 @@ set(sources ${sources}
 	src/scaleform/menu/dialogue_info_menu.h
 	src/scaleform/scaleform.cpp
 	src/scaleform/scaleform.h
+	src/setting/setting.cpp
 	src/setting/setting.h
+	src/setting/setting_ini.h
+	src/setting/setting_npc.cpp
+	src/setting/setting_npc.h
 	src/util/constant.h
 	src/util/file.cpp
 	src/util/file.h
@@ -33,6 +37,8 @@ set(sources ${sources}
 	src/util/form.h
 	src/util/menukeys.h
 	src/util/offset.h
+	src/util/translation.cpp
+	src/util/translation.h
 	src/util/type_util.h
 	src/util/util.h
 )

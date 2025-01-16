@@ -103,7 +103,7 @@ namespace scaleform {
 
     void dialogue_info_menu::RefreshPlatform() { IMenu::RefreshPlatform(); }
 
-    void dialogue_info_menu::Logger::LogMessageVarg(RE::GFxLogConstants::LogMessageType,
+    void dialogue_info_menu::Logger::LogMessageVarg(LogMessageType,
         const char* a_fmt,
         const std::va_list a_arg_list) {
         std::string fmt(a_fmt ? a_fmt : "");
@@ -292,14 +292,14 @@ namespace scaleform {
     }
 
     void dialogue_info_menu::adjust_position() {
-        root_obj_.X(setting::get_pos_x());
-        root_obj_.Y(setting::get_pos_y());
+        root_obj_.X(setting_ini::get_pos_x());
+        root_obj_.Y(setting_ini::get_pos_y());
         logger::trace("Current Position is: X {}, Y {}"sv, root_obj_.X(), root_obj_.Y());
     }
 
     void dialogue_info_menu::scale_window() {
-        root_obj_.XScale(setting::get_scale_x());
-        root_obj_.YScale(setting::get_scale_y());
+        root_obj_.XScale(setting_ini::get_scale_x());
+        root_obj_.YScale(setting_ini::get_scale_y());
         logger::trace("Scaled Window");
     }
 
