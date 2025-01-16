@@ -1,11 +1,16 @@
 {
   "name": "dialoguemorenpcinfo",
-  "version-string": "1.0.8",
+  "version-string": "1.1.0",
   "description": "A Window to display more NPC Info",
   "homepage": "https://github.com/mlthelama/DialogueMoreNPCInfo",
-  "license": "MIT",
+  "license": "GPL-2.0-or-later",
   "dependencies": [
     "simpleini",
-    "commonlibsse-ng"
+    "commonlibsse-ng",
+    "nlohmann-json",
+    "unordered-dense",
+    "clib-util",
+    "fmt",
+    "spdlog"
   ]
 }

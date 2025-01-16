@@ -1,6 +1,7 @@
 #pragma once
 #include "util/constant.h"
 #include "util/menukeys.h"
+#include "util/type_util.h"
 #include "util/util.h"
 
 #include "util/offset.h"
@@ -33,7 +34,7 @@ public:
 
     static std::string_view get_faction(RE::Actor*& a_actor) {
         auto faction = "-";
-        if (setting::get_hide_faction()) {
+        if (setting_ini::get_hide_faction()) {
             return faction;
         }
         a_actor->VisitFactions([&](const RE::TESFaction* a_faction, int8_t a_rank) {
@@ -43,10 +44,7 @@ public:
                 //logger::trace("name {}, formId {}, rank {}"sv, name, intToHex(formID), a_rank);
                 if (const auto form_id(a_faction->GetFormID());
                     std::ranges::find(faction_form_list_, form_id) != faction_form_list_.end()) {
-                    logger::trace("name {}, formId {}, rank {}"sv,
-                        name,
-                        util::string_util::int_to_hex(form_id),
-                        a_rank);
+                    logger::trace("name {}, formId {}, rank {}"sv, name, util::type_util::int_to_hex(form_id), a_rank);
                     faction = name;
                     return true;
                 }
@@ -75,7 +73,7 @@ public:
             max >= util::min_train_level && max <= util::max_train_level) {
             // handle hand to hand support
             auto value = get_value_from_map(teaching_skill_string_map_, teaches_skill.get());
-            if (setting::get_hand_to_hand()) {
+            if (setting_ini::get_hand_to_hand()) {
                 switch (teaches_skill.get()) {
                     case RE::CLASS_DATA::Skill::kLockpicking:
                         value = menu_keys::hand_to_hand;

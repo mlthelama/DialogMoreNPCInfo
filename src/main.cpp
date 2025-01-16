@@ -1,8 +1,10 @@
-#include "event.h"
-#include "hook.h"
+#include "event/event.h"
+#include "hook/hook.h"
+#include "mod/mod_manager.h"
 #include "scaleform/scaleform.h"
 #include "setting/setting.h"
-#include "util/constant.h"
+#include "setting/setting_ini.h"
+#include "util/translation.h"
 
 void init_logger() {
     if (static bool initialized = false; !initialized) {
@@ -12,70 +14,61 @@ void init_logger() {
     }
 
     try {
-#ifndef NDEBUG
-        auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
-#else
         auto path = logger::log_directory();
         if (!path) {
             stl::report_and_fail("failed to get standard log path"sv);
         }
 
         *path /= fmt::format("{}.log"sv, Version::PROJECT);
-        auto sink = make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
-#endif
-        auto log = make_shared<spdlog::logger>("global log"s, move(sink));
+        auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
+        auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
 
-#ifndef NDEBUG
-        log->set_level(spdlog::level::trace);
-#else
-        log->set_level(spdlog::level::trace);
-        log->flush_on(spdlog::level::trace);
-#endif
+        log->set_level(spdlog::level::info);
+        log->flush_on(spdlog::level::info);
 
-        set_default_logger(move(log));
+        spdlog::set_default_logger(std::move(log));
         spdlog::set_pattern("[%H:%M:%S.%f] %s(%#) [%^%l%$] %v"s);
 
         logger::info("{} v{}"sv, Version::PROJECT, Version::NAME);
 
         try {
-            setting::load_settings();
+            setting_ini::load_settings();
         } catch (const std::exception& e) {
-            logger::warn("failed to load setting {}"sv, e.what());
+            logger::warn("failed to load ini_setting {}"sv, e.what());
         }
 
-        switch (setting::get_log_level()) {
-            case util::const_log_trace:
-                spdlog::set_level(spdlog::level::trace);
-                spdlog::flush_on(spdlog::level::trace);
-                break;
-            case util::const_log_debug:
-                spdlog::set_level(spdlog::level::debug);
-                spdlog::flush_on(spdlog::level::debug);
-                break;
-            case util::const_log_info:
-                spdlog::set_level(spdlog::level::info);
-                spdlog::flush_on(spdlog::level::info);
-                break;
-            default:
-                spdlog::set_level(spdlog::level::trace);
-                spdlog::flush_on(spdlog::level::trace);
-                break;
+        //if (setting::get_log_level()) {
+        if (true) {
+            spdlog::set_level(spdlog::level::trace);
+            spdlog::flush_on(spdlog::level::trace);
         }
+
     } catch (const std::exception& e) {
         logger::critical("failed, cause {}"sv, e.what());
     }
 }
 
+void init_settings() {
+    try {
+        setting::setting::load_all_settings();
+    } catch (const std::exception& e) {
+        logger::warn("failed to load json setting {}"sv, e.what());
+    }
+}
+
+//todo move to separate file
+void init_mod_support() {
+    auto* mod_manager = mod::mod_manager::get_singleton();
+
+    //check for mods here
+    mod_manager->set_hand_to_hand(LoadLibrary(L"Data/SKSE/Plugins/HandToHand.dll"));
+}
+
 EXTERN_C [[maybe_unused]] __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse) {
-#ifndef NDEBUG
-    while (!IsDebuggerPresent()) {};
-#endif
-    //REL::Module::reset();
-
-
     init_logger();
 
     logger::info("{} loading"sv, Version::PROJECT);
+    logger::info("Game version {}"sv, a_skse->RuntimeVersion().string());
 
     Init(a_skse);
 
@@ -83,9 +76,16 @@ EXTERN_C [[maybe_unused]] __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(con
         switch (a_msg->type) {
             case SKSE::MessagingInterface::kDataLoaded:
                 logger::info("Data loaded"sv);
-                hook::install_hooks();
-                event::sink_event_handlers();
-                scaleform::Register();
+                event::event::sink_event_handler();
+
+                init_settings();
+                init_mod_support();
+
+                util::translation::get_singleton()->build_translation_map();
+
+                hook::hook::install();
+                scaleform::scaleform::Register();
+
                 logger::info("Done with adding"sv);
                 break;
         }
@@ -101,7 +101,7 @@ EXTERN_C [[maybe_unused]] __declspec(dllexport) constinit auto SKSEPlugin_Versio
     v.AuthorName(Version::AUTHOR);
     v.PluginVersion({ Version::MAJOR, Version::MINOR, Version::PATCH, Version::BETA });
     v.UsesAddressLibrary(true);
-    v.CompatibleVersions({ SKSE::RUNTIME_SSE_1_6_353 });
+    v.CompatibleVersions({ SKSE::RUNTIME_SSE_LATEST });
     v.HasNoStructUse(true);
     return v;
 }();

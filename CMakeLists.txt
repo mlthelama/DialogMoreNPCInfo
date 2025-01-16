@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 
 set(NAME "DialogueMoreNPCInfo")
-set(VERSION 1.0.8.0)
+set(VERSION 1.1.0.0)
 
 # ---- Options ----
 
@@ -87,6 +87,10 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package(CommonLibSSE CONFIG REQUIRED)
 
 find_package(spdlog REQUIRED CONFIG)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(unordered_dense CONFIG REQUIRED)
+
+find_path(CLIB_UTIL_INCLUDE_DIRS "ClibUtil/utils.hpp")
 
 # ---- Add source files ----
 
@@ -123,7 +127,7 @@ add_library(
 target_compile_features(
 	${PROJECT_NAME}
 	PRIVATE
-		cxx_std_20
+		cxx_std_23
 )
 
 target_include_directories(
@@ -131,6 +135,7 @@ target_include_directories(
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}/include
 		${CMAKE_CURRENT_SOURCE_DIR}/src
+		${CLIB_UTIL_INCLUDE_DIRS}
 )
 
 target_link_libraries(
@@ -138,6 +143,8 @@ target_link_libraries(
 	PRIVATE
 		CommonLibSSE::CommonLibSSE
 		spdlog::spdlog
+		nlohmann_json::nlohmann_json
+		unordered_dense::unordered_dense
 )
 
 if (MSVC)
